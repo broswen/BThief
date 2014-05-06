@@ -1,0 +1,41 @@
+name: BThief
+version: 1.0
+author: broswen
+description: a custom pickpocket/thief plugin
+main: me.broswen.bthief.BThief
+softdepend: [Vault]
+
+commands:
+  bthief:
+    description: the main admin command
+  thief:
+    description: the command to steal from someone
+  thiefbowl:
+    description: gives you a thiefstick
+
+permissions:
+  bthief.info:
+    description: allows you to use the admin command
+    default: op
+    
+  bthief.frisk:
+    description: allows you to use the thief command
+    default: op
+    
+  bthief.exempt:
+    description: stops a player from being stolen from
+    default: false
+    
+  bthief.friskstick:
+    description: allows you to spawn a thiefstick
+    default: op
+    
+  bthief.police:
+    description: defines a police officer
+    default: false
+    
+  bthief.setjail:
+    description: allows you to set the jail coordinates
+    default: op
+    
+
