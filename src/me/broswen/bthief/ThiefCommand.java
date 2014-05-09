@@ -87,19 +87,18 @@ public class ThiefCommand implements CommandExecutor{
 		if(plugin.hasDrug(targetPlayer)){
 			plugin.moveDrugs(targetPlayer, player);
 			
-			player.sendMessage(plugin.prefix + "You stole some drugs from " + targetPlayer.getName() + "!");
-			
 			if(plugin.getConfig().getBoolean("use-economy")){
-				player.sendMessage(plugin.prefix + "You stole $" + plugin.getConfig().getDouble("theft-reward")+ " from " + targetPlayer.getName() + "!");
-				plugin.giveMoney(plugin.getConfig().getDouble("theft-reward"), player);
+				plugin.stealMoney(plugin.getConfig().getDouble("theft-reward"), player, targetPlayer);
 			}
-			
-			targetPlayer.sendMessage(plugin.prefix + player.getName() + " stole some drugs from you!");
 			
 			player.playSound(player.getLocation(), Sound.SHEEP_SHEAR, 2, -1);
 			targetPlayer.playSound(targetPlayer.getLocation(), Sound.SHEEP_SHEAR, 2, -1);
 		}else{
 			player.sendMessage(plugin.prefix + targetPlayer.getName() + " didn't have any drugs! You were sent to jail for attempted theft!");
+			if(plugin.hasDrug(player)){
+				plugin.removeDrugs(player);
+				player.sendMessage(plugin.prefix + "Your drugs have been confiscated!");
+			}
 			
 			if(plugin.getConfig().getBoolean("use-jail-plugin")){
 				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "jail " + player.getName() + " " + plugin.getConfig().getString("jail-name") + " " + plugin.getConfig().getInt("jail-time") + "s");

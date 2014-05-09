@@ -1,8 +1,10 @@
 # THIS MAY SEEM CONFUSING, REFERENCE THE HELP SECTION OR ASK THE DEVELOPER HIMSELF
 # BTHIEF - A CUSTOM THEFT PLUGIN MADE BY BROSWEN
-#                         
+#
 use-economy: true
 theft-reward: 1000
+chance-per-stack: 80
+chance-for-all: 10
 move-drugs: false
 use-thief-delay: true
 thief-delay: 30

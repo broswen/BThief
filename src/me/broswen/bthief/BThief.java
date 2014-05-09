@@ -1,6 +1,7 @@
 package me.broswen.bthief;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -74,6 +75,27 @@ public class BThief extends JavaPlugin{
 		econ.depositPlayer(player.getName(), money);
 	}
 	
+	public void stealMoney(Double money, Player player, Player targetPlayer){
+		
+		double balance = econ.getBalance(targetPlayer.getName());
+		if(balance <= 0){
+			player.sendMessage(prefix + "You didn't steal any money because that player is broke!");
+			return;
+		}else if(balance < money){
+			econ.withdrawPlayer(targetPlayer.getName(), balance);
+			econ.depositPlayer(player.getName(), balance);
+			
+			targetPlayer.sendMessage(prefix + player.getName() + " stole $" + balance + " from you!");
+			player.sendMessage(prefix + "You stole $" + balance + " from " + targetPlayer.getName() + "!");
+			return;
+		}
+		
+		targetPlayer.sendMessage(prefix + player.getName() + " stole $" + plugin.getConfig().getDouble("theft-reward")+ " from you!");
+		player.sendMessage(prefix + "You stole $" + plugin.getConfig().getDouble("theft-reward")+ " from " + targetPlayer.getName() + "!");
+		econ.withdrawPlayer(targetPlayer.getName(), money);
+		econ.depositPlayer(player.getName(), money);
+	}
+	
 	public boolean isClose(Player player, Player targetPlayer){
 		
 		if(player.getLocation().distance(targetPlayer.getLocation()) > 5){
@@ -106,34 +128,66 @@ public class BThief extends JavaPlugin{
 	}
 
 	public void moveDrugs(Player targetPlayer, Player player){
-		
 		Inventory targetPlayerInventory = targetPlayer.getInventory();
+		int targetPlayerInventorySize = targetPlayerInventory.getSize();
+		Boolean say = true;
+		
+		for(int i = 0 ; i < targetPlayerInventorySize ; i++) {
+			ItemStack item = targetPlayerInventory.getItem(i);
+			Random rand = new Random();
+			
+			int r = rand.nextInt(99);
+			
+			if(r > 19){
+				
+				if(item != null){
+				    if(item.getType() == Material.INK_SACK && item.getData().getData() == (short) 3 || item.getType() == Material.INK_SACK && item.getData().getData() == (short) 2 || item.getType() == Material.PUMPKIN_SEEDS || item.getType() == Material.MELON_SEEDS || item.getType() == Material.SUGAR || item.getType() == Material.NETHER_STALK || item.getType() == Material.WHEAT){
+				    	int amount = item.getAmount();
+				    	ItemStack item2 = new ItemStack(item.getType(), amount);
+				    	
+						short dura = item.getDurability();
+						item2.setDurability(dura);
+				    	
+				    	targetPlayer.getInventory().setItem(i, null);
+				    	targetPlayer.updateInventory();
+				    	
+				    	if(say){
+							player.sendMessage(plugin.prefix + "You stole some drugs from " + targetPlayer.getName() + "!");
+							targetPlayer.sendMessage(plugin.prefix + player.getName() + " stole some drugs from you!");
+							say = false;
+						}
+				    	
+				    	
+				    	if(player.getInventory().firstEmpty() == -1){
+				    		player.getWorld().dropItemNaturally(player.getLocation(), item2);
+				    	}else{
+				    		player.getInventory().addItem(item2);
+					    	player.updateInventory();
+				    	}
+				    }
+				}
+			}
+		}
+		
+	}
+
+	public void removeDrugs(Player player){
+		Inventory targetPlayerInventory = player.getInventory();
 		int targetPlayerInventorySize = targetPlayerInventory.getSize();
 		
 		for(int i = 0 ; i < targetPlayerInventorySize ; i++) {
 			ItemStack item = targetPlayerInventory.getItem(i);
 			
 			if(item != null){
-			    if(item.getType() == Material.INK_SACK && item.getData().getData() == (short) 3 || item.getType() == Material.INK_SACK && item.getData().getData() == (short) 2 || item.getType() == Material.PUMPKIN_SEEDS || item.getType() == Material.MELON_SEEDS || item.getType() == Material.SUGAR || item.getType() == Material.NETHER_STALK || item.getType() == Material.WHEAT || item.getType() == Material.PUMPKIN || item.getType() == Material.SUGAR_CANE){
+			    if(item.getType() == Material.INK_SACK && item.getData().getData() == (short) 3 || item.getType() == Material.INK_SACK && item.getData().getData() == (short) 2 || item.getType() == Material.PUMPKIN_SEEDS || item.getType() == Material.MELON_SEEDS || item.getType() == Material.SUGAR || item.getType() == Material.NETHER_STALK || item.getType() == Material.WHEAT){
 			    	int amount = item.getAmount();
 			    	ItemStack item2 = new ItemStack(item.getType(), amount);
 			    	
 					short dura = item.getDurability();
 					item2.setDurability(dura);
 			    	
-			    	targetPlayer.getInventory().setItem(i, null);
-			    	//targetPlayer.getInventory().remove(item2);
-			    	targetPlayer.updateInventory();
-			    	
-			    	player.getInventory().addItem(item2);
-			    	player.updateInventory();
-			    	
-//			    	if(player.getInventory().firstEmpty() == -1){
-//			    		player.getWorld().dropItemNaturally(player.getLocation(), item);
-//			    	}else{
-//			    		player.getInventory().addItem(item);
-//				    	player.updateInventory();
-//			    	}
+					player.getInventory().setItem(i, null);
+					player.updateInventory();
 			    }
 			}
 		}
